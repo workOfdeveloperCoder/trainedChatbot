@@ -1,17 +1,36 @@
 const axios = require("axios");
 
-async function generateResponse(prompt) {
+async function generateResponse(prompt, res) {
   try {
-    const response = await axios.post("http://localhost:11434/api/generate", {
-      model: "llama3",
-      prompt: prompt,
-      stream: false
-    });
+    const response = await axios.post(
+      "http://localhost:11434/api/generate",
+      {
+        model: "llama3",
+        prompt,
+        stream: true
+      },
+      {
+        responseType: "stream"
+      }
+    );
 
-    return response.data.response;
+    for await (const chunk of response.data) {
+      const lines = chunk.toString().trim().split("\n");
+
+      for (const line of lines) {
+        const json = JSON.parse(line);
+
+        if (json.response) {
+          res.write(json.response);
+        }
+      }
+    }
+
+    res.end();
+
   } catch (error) {
     console.error("LLM Error:", error.message);
-    return "AI service error";
+    res.status(500).end("AI service error");
   }
 }
 

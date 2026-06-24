@@ -5,12 +5,14 @@ const { generateResponse } = require("../services/llmService");
 const { searchDocs } = require("../services/vectorSearchService");
 
 router.post("/", async (req, res) => {
-  const { message } = req.body;
 
-  const contextChunks = await searchDocs(message);
-  const context = contextChunks.join("\n");
+    const { message } = req.body;
 
- const prompt = `
+    const contextChunks = await searchDocs(message);
+
+    const context = contextChunks.join("\n");
+
+    const prompt = `
         You are a helpful AI assistant for a website.
 
         Rules:
@@ -25,14 +27,13 @@ router.post("/", async (req, res) => {
         ${message}
 
         Answer:
-        `;
+    `;
 
-  const reply = await generateResponse(prompt);
+    res.setHeader("Content-Type", "text/plain");
+    res.setHeader("Transfer-Encoding", "chunked");
 
-  res.json({
-    reply,
-    contextUsed: contextChunks
-  });
+    await generateResponse(prompt, res);
+
 });
 
 module.exports = router;

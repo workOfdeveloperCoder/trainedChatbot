@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ollama Chat</title>
+</head>
+<body>
+
+<h2>AI Chat</h2>
+
+<textarea id="prompt" rows="5" cols="50"></textarea>
+<br><br>
+
+<button onclick="sendMessage()">Send</button>
+
+<hr>
+
+<div id="response"></div>
+
+<script>
+async function sendMessage() {
+
+    const prompt =
+        document.getElementById("prompt").value;
+
+    const responseDiv =
+        document.getElementById("response");
+
+    responseDiv.textContent = "";
+
+    const response = await fetch(
+        "http://localhost:3000/api/chat",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: prompt
+            })
+        }
+    );
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+
+        const { done, value } =
+            await reader.read();
+
+        if (done) break;
+
+        responseDiv.textContent +=
+            decoder.decode(value);
+    }
+}
+</script>
+
+</body>
+</html>
