@@ -1,0 +1,8 @@
+Refund policy: Customers can request refund within 7 days of purchase.
+
+Shipping time: Orders are delivered within 3 to 5 working days in Pakistan.
+
+Support email: support@yourwebsite.com
+
+Laravel services: We build APIs, dashboards, and backend systems using Laravel.
+
