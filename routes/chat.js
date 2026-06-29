@@ -9,12 +9,16 @@ router.post("/", async (req, res) => {
     const { message } = req.body;
 
     if (!req.session.history) {
-        req.session.history = "";
+        req.session.history = [];
     }
     
     const contextChunks = await searchDocs(message);
 
     const context = contextChunks.join("\n");
+
+    const historyText = req.session.history
+        .map(h => `${h.role}: ${h.content}`)
+        .join("\n");
 
     const prompt = `
         === ROLE ===
@@ -24,7 +28,7 @@ router.post("/", async (req, res) => {
         ${context}
 
         === CONVERSATION HISTORY ===
-        ${req.session.history}
+        ${historyText}
 
         === USER QUESTION ===
         ${message}
@@ -46,12 +50,7 @@ router.post("/", async (req, res) => {
     `;
 
     if (req.session.history.length > 20) {
-
-        req.session.history = [
-        req.session.history[0],
-        ...req.session.history.slice(-19)
-        ];
-
+        req.session.history = req.session.history.slice(-20);
     }
 
     res.setHeader("Content-Type", "text/plain");

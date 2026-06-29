@@ -35,18 +35,16 @@ async function generateResponse(prompt, res, req, userMessage) {
         }
     }
 
-    req.session.history += `
-      User: ${userMessage}
-      Assistant: ${assistantReply}
-    `;
+    req.session.history.push(
+      { role: "user", content: userMessage },
+      { role: "assistant", content: assistantReply }
+    );
     
-    const lines = req.session.history.split("\n").filter(Boolean);
-
-    if (lines.length > 40) {
-      req.session.history = lines.slice(-40).join("\n");
+    if (req.session.history.length > 40) {
+      req.session.history = req.session.history.slice(-40);
     }
-    res.end();
-    
+
+    res.end();    
 
   } catch (error) {
     console.error("LLM Error:", error.message);
