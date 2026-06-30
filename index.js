@@ -8,9 +8,9 @@ async function run() {
 
     await indexDocs();
 
-    console.log("✅ Indexing completed successfully");
+    console.log("Indexing completed successfully");
   } catch (err) {
-    console.error("❌ Indexing failed:", err.message);
+    console.error("Indexing failed:", err.message);
   }
 }
 
